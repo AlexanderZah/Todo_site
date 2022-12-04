@@ -18,7 +18,7 @@
                     {% for todo in todos %}
                         <a href="{% url 'edittodo' todo.id %}" 
                         class="list-group-item list-group-item-action
-                        {% if todo.important %} list-group-item-danger{% endif %}">
+                        {% if todo.important %} list-group-item-primary{% endif %}">
                         <b>{{ todo.title }}</b>
                         {% if todo.description %} - {{ todo.description|truncatechars:30 }}{% endif %}
                         </a>
