@@ -1,0 +1,27 @@
+
+
+
+{% block header %}
+{% if user.is_authenticated %}
+
+<h2>Your login for {{user.username}}</h2>
+
+<form method='POST' action='{% url 'logoutuser' %}'>
+    {% csrf_token %}
+    <button type='submit'>logout<button>
+</form>
+<br>
+{% else %}
+<a href="{% url 'signupuser' %}">Signup</a>
+<a href="{% url 'loginuser' %}">Login</a>
+
+{% endif %}
+{% endblock header %}
+
+
+
+
+{% block content %}
+
+
+{% endblock content %}
