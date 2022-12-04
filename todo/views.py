@@ -5,8 +5,8 @@ from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from .forms import TodosForm
 from .models import Todos
-from django.utils.timezone import datetime
-
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'todo/home.html')
@@ -42,17 +42,26 @@ def loginuser(request):
             login(request, user)
             return redirect('currenttodos')
 
+@login_required
 def logoutuser(request):
     if request.method == 'POST':
         logout(request)
         return redirect('home')            
 
+@login_required
 def currenttodos(request):
     """Представления для отображения задач todo"""
-    todos = Todos.objects.filter(user=request.user, date_completed__isnull=True)
+    todos = Todos.objects.filter(user=request.user, date_completed__isnull=True).order_by('-created')
     return render(request, 'todo/currenttodos.html', context={'todos':todos})
-    
 
+@login_required    
+def completedtodos(request):
+    """Представления для отображения выполненных задач todo"""
+    todos = Todos.objects.filter(user=request.user, date_completed__isnull=False).order_by('-date_completed')
+    return render(request, 'todo/completedtodos.html', context={'todos':todos})
+
+
+@login_required
 def createtodo(request):
     """Представление для создание задач в форме"""
     if request.method == 'POST':
@@ -67,6 +76,7 @@ def createtodo(request):
     else:
         return render(request,'todo/createtodo.html',context={'form':TodosForm()})
 
+@login_required
 def edittodo(request, todo_id):
     """Представления для редактирования задачи todo"""
     todo = get_object_or_404(Todos, id=todo_id, user=request.user)
@@ -81,15 +91,17 @@ def edittodo(request, todo_id):
         except ValueError:
             return render(request, 'todo/edit_todo.html', context={'todo':todo, 'form':form, 'error':'Bad data. Try again:)'})
 
+@login_required
 def completetodo(request,todo_id):
     """Функция выполнения задачи"""
     todo = get_object_or_404(Todos, id=todo_id, user=request.user)
     if request.method == 'POST':
         
-        todo.date_completed = datetime.now()
+        todo.date_completed = timezone.now()
         todo.save()
         return redirect('currenttodos')
 
+@login_required
 def deletetodo(request, todo_id):
     todo = get_object_or_404(Todos, id=todo_id, user=request.user)
     if request.method == 'POST':
