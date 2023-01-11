@@ -15,7 +15,7 @@ python -m venv venv
 ./venv/Scripts/activate.ps1
 ```
 
-4) Установить необходимые пакеты
+4) Установить зависимости
 ```sh
 pip install -r requirements.txt
 ```
